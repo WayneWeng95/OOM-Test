@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//proc/**)",
+      "Read(//proc/79191/**)"
+    ]
+  }
+}

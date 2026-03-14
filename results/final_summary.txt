@@ -1,0 +1,41 @@
+═══════════════════════════════════════════════════════════════
+  EXPERIMENT 03 FINAL SUMMARY
+  Generated: 2026-03-14T16:52:07
+  Trials: 3  Containers: 4  Cycles/container: 10
+  Memory limit: 300M  Worker max: 100 MB
+═══════════════════════════════════════════════════════════════
+
+── Per-trial, per-container kill sequences ──
+  Trial 1:
+    container=0  N/A
+    container=1  N/A
+    container=2  N/A
+    container=3  N/A
+  Trial 2:
+    container=0  N/A
+    container=1  N/A
+    container=2  N/A
+    container=3  N/A
+  Trial 3:
+    container=0  N/A
+    container=1  N/A
+    container=2  N/A
+    container=3  N/A
+
+── Cross-container determinism (within each trial) ──
+  Trial 1: MATCH
+  Trial 2: MATCH
+  Trial 3: MATCH
+
+── Cross-trial determinism (same container across trials) ──
+  Container 0: MATCH
+  Container 1: MATCH
+  Container 2: MATCH
+  Container 3: MATCH
+
+── Overall verdict ──
+  CROSS_CONTAINER: DETERMINISTIC — all containers show the same kill sequence within each trial.
+  CROSS_TRIAL:     DETERMINISTIC — each container reproduces the same sequence across trials.
+
+  See individual logs: ./results/trial_T_container_C.log
+  See per-trial comparisons: ./results/trial_T_comparison.txt

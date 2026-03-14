@@ -1,0 +1,8 @@
+TRIAL 3 COMPARISON  (2026-03-14T16:52:07)
+
+  container=0  sequence=
+  container=1  sequence=
+  container=2  sequence=
+  container=3  sequence=
+
+CROSS_CONTAINER_VERDICT: MATCH (all 4 containers show same kill sequence)
