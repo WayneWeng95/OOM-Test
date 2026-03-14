@@ -1,5 +1,5 @@
-CONTROLLER_START ts=1773528721.221 container=3 trial=1 max_mb=100 num_cycles=10
-SPAWN slot=0 gen=0 pid=85650 ts=1773528721.221
-SPAWN slot=1 gen=0 pid=85652 ts=1773528721.221
-SPAWN slot=2 gen=0 pid=85653 ts=1773528721.221
-SPAWN slot=3 gen=0 pid=85654 ts=1773528721.221
+CONTROLLER_START ts=1773529153.138 container=3 trial=1 max_mb=100 num_cycles=10
+SPAWN slot=0 gen=0 pid=88450 ts=1773529153.139
+SPAWN slot=1 gen=0 pid=88451 ts=1773529153.139
+SPAWN slot=2 gen=0 pid=88452 ts=1773529153.139
+SPAWN slot=3 gen=0 pid=88453 ts=1773529153.139

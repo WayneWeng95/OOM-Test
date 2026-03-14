@@ -1,8 +1,8 @@
 ═══════════════════════════════════════════════════════════════
   EXPERIMENT 03 FINAL SUMMARY
-  Generated: 2026-03-14T16:52:07
+  Generated: 2026-03-14T16:59:16
   Trials: 3  Containers: 4  Cycles/container: 10
-  Memory limit: 300M  Worker max: 100 MB
+  Memory limit: 200M  Worker max: 100 MB
 ═══════════════════════════════════════════════════════════════
 
 ── Per-trial, per-container kill sequences ──

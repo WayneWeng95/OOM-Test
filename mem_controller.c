@@ -140,13 +140,17 @@ int main(int argc, char *argv[]) {
     log_line("CONTROLLER_START ts=%.3f container=%d trial=%d max_mb=%ld num_cycles=%d\n",
              now_ts(), container_id, trial_id, g_worker_max_mb, num_cycles);
 
-    /* Initialize and spawn all worker slots */
+    /* Fork all workers first in a tight loop, then log — minimises the
+     * wall-clock gap between the first and last worker starting. */
     WorkerSlot slots[NUM_WORKERS];
+    time_t spawn_ts = time(NULL);
     for (int i = 0; i < NUM_WORKERS; i++) {
         slots[i].slot       = i;
         slots[i].generation = 0;
+        slots[i].spawn_time = spawn_ts;
         slots[i].pid        = spawn_worker(i, 0);
-        slots[i].spawn_time = time(NULL);
+    }
+    for (int i = 0; i < NUM_WORKERS; i++) {
         log_line("SPAWN slot=%d gen=0 pid=%d ts=%.3f\n",
                  i, (int)slots[i].pid, now_ts());
     }

@@ -15,7 +15,7 @@ set -euo pipefail
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 NUM_CONTAINERS=4
-MEM_LIMIT="300M"      # per cgroup  (4 × 100 MB workers = 400 MB > 300 MB → OOM)
+MEM_LIMIT="200M"      # per cgroup  (4 × 100 MB workers = 400 MB > 300 MB → OOM)
 WORKER_MAX_MB=100     # each worker grows to 100 MB
 NUM_CYCLES=10         # OOM events to observe per container per trial
 NUM_TRIALS=3
@@ -51,38 +51,6 @@ mkdir -p "${LOG_DIR}"
 
 # ── Helper: timestamp ──────────────────────────────────────────────────────────
 ts() { date '+%Y-%m-%dT%H:%M:%S'; }
-
-# ── Helper: create one cgroup ─────────────────────────────────────────────────
-setup_cgroup() {
-    local name="$1"
-    local cg="${CGROUP_ROOT}/${name}"
-
-    # Remove stale cgroup if it exists
-    if [[ -d "$cg" ]]; then
-        # Kill any lingering processes first
-        if [[ -s "${cg}/cgroup.procs" ]]; then
-            while read -r pid; do
-                kill -9 "$pid" 2>/dev/null || true
-            done < "${cg}/cgroup.procs"
-            sleep 0.5
-        fi
-        rmdir "$cg" 2>/dev/null || true
-    fi
-
-    mkdir -p "$cg"
-
-    # Enable memory controller (parent must have it delegated)
-    echo "+memory" > "${CGROUP_ROOT}/cgroup.subtree_control" 2>/dev/null || true
-
-    echo "${MEM_LIMIT}" > "${cg}/memory.max"
-    echo "0"            > "${cg}/memory.swap.max"
-    echo "1"            > "${cg}/memory.oom.group" 2>/dev/null || true
-
-    # Verify the limit was actually accepted
-    local applied
-    applied=$(cat "${cg}/memory.max" 2>/dev/null || echo "?")
-    echo "  [setup] ${name}: memory.max=${applied}"
-}
 
 # ── Helper: destroy one cgroup ────────────────────────────────────────────────
 teardown_cgroup() {
@@ -128,12 +96,10 @@ for trial in $(seq 1 "$NUM_TRIALS"); do
     echo "  TRIAL ${trial} / ${NUM_TRIALS}   ($(ts))"
     echo "══════════════════════════════════════════════════════════════"
 
-    # -- Setup all cgroups --
-    for c in $(seq 0 $(( NUM_CONTAINERS - 1 ))); do
-        setup_cgroup "${CGROUP_PREFIX}_${c}"
-    done
+    # -- Setup all cgroups in parallel, then launch all controllers in parallel --
+    # Enable memory controller once (idempotent) before forking
+    echo "+memory" > "${CGROUP_ROOT}/cgroup.subtree_control" 2>/dev/null || true
 
-    # -- Launch all controllers in parallel --
     declare -a ctrl_pids=()
     declare -a ctrl_logs=()
 
@@ -142,15 +108,21 @@ for trial in $(seq 1 "$NUM_TRIALS"); do
         ctrl_logs+=("$logfile")
         cg="${CGROUP_ROOT}/${CGROUP_PREFIX}_${c}"
 
-        # Start controller in the background; shell will exec it as a child
-        # We need the controller's PID *before* it forks workers so we can
-        # add it to the cgroup. Use a small wrapper:
+        # Each subshell: sets up its own cgroup, then immediately execs the
+        # controller — so cgroup creation and controller launch are one step,
+        # all four happening in parallel via &.
         (
-            # Write our own PID into the cgroup.
-            # Must use $BASHPID — $$ gives the *parent* shell's PID in subshells.
+            # Set up this container's cgroup
+            [[ -d "$cg" ]] && rmdir "$cg" 2>/dev/null || true
+            mkdir -p "$cg"
+            echo "${MEM_LIMIT}" > "${cg}/memory.max"
+            echo "0"            > "${cg}/memory.swap.max"
+            echo "1"            > "${cg}/memory.oom.group" 2>/dev/null || true
+
+            # Join the cgroup (BASHPID = this subshell, which exec replaces)
             echo $BASHPID > "${cg}/cgroup.procs"
-            # Protect ourselves from OOM
             echo -500 > "/proc/$BASHPID/oom_score_adj" 2>/dev/null || true
+
             exec "$CONTROLLER_BIN" \
                 "$WORKER_BIN" \
                 "$WORKER_MAX_MB" \
