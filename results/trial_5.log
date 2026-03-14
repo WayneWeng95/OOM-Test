@@ -1,0 +1,17 @@
+=== Trial 5 ===
+Timestamp: 2026-03-14T15:58:17-06:00
+Workers:
+  small: 20MB (PID 78548)
+  large: 80MB (PID 78549)
+  medium: 50MB (PID 78550)
+Trigger: 100MB (PID 78595)
+Killed: trigger(78595) 
+
+Kernel OOM log:
+[38295.507978] mem_worker invoked oom-killer: gfp_mask=0xcc0(GFP_KERNEL), order=0, oom_score_adj=0
+[38295.508022]  oom_kill_process+0x118/0x280
+[38295.508175] Memory cgroup stats for /oom_experiment:
+[38295.508261] [  pid  ]   uid  tgid total_vm      rss rss_anon rss_file rss_shmem pgtables_bytes swapents oom_score_adj name
+[38295.508279] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=/,mems_allowed=0,oom_memcg=/oom_experiment,task_memcg=/oom_experiment,task=mem_worker,pid=78595,uid=0
+[38295.508293] Memory cgroup out of memory: Killed process 78595 (mem_worker) total-vm:105080kB, anon-rss:87936kB, file-rss:1536kB, shmem-rss:0kB, UID:0 pgtables:220kB oom_score_adj:0
+

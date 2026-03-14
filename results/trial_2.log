@@ -1,0 +1,12 @@
+=== Trial 2 ===
+Timestamp: 2026-03-14T15:57:47-06:00
+Workers:
+  small: 20MB (PID 78241)
+  large: 80MB (PID 78242)
+  medium: 50MB (PID 78243)
+Trigger: 100MB (PID 78289)
+Killed: none
+
+Kernel OOM log:
+
+
