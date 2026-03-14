@@ -1,0 +1,19 @@
+OOM Killer oom_score_adj Override Experiment - Summary
+Date: Sat Mar 14 04:10:36 PM MDT 2026
+Trials: 5
+Memory limit: 200M
+
+Per-trial results:
+  Trial 1: Killed -> small(81173) trigger(81227) 
+  Trial 2: Killed -> none
+  Trial 3: Killed -> small(81428) trigger(81475) 
+  Trial 4: Killed -> small(81540) trigger(81587) 
+  Trial 5: Killed -> small(81631) trigger(81678) 
+
+RESULT: PARTIAL/UNEXPECTED - 'small' was killed in 4/5 trials.
+Unique outcomes:
+      1 Killed: small(81631) trigger(81678) 
+      1 Killed: small(81540) trigger(81587) 
+      1 Killed: small(81428) trigger(81475) 
+      1 Killed: small(81173) trigger(81227) 
+      1 Killed: none

@@ -1,0 +1,2 @@
+Trial 3: Killed -> small trigger 
+  Expected: small (because oom_score_adj=+1000)

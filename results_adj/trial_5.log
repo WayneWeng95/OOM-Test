@@ -1,0 +1,2 @@
+Trial 5: Killed -> none
+  Expected: small (because oom_score_adj=+1000)
