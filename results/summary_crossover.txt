@@ -1,0 +1,93 @@
+neutral=127MB | limit=152MB | BELOW threshold
+targeted: 20MB, adj=+10 | oom_score=674
+neutral:  127MB, adj=0          | oom_score=670
+trigger:  30MB, adj=-1000       | (protected, not a candidate)
+Killed: none (OOM may not have fired)
+OOM log:
+
+
+neutral=137MB | limit=162MB | BELOW threshold
+targeted: 20MB, adj=+10 | oom_score=674
+neutral:  137MB, adj=0          | oom_score=670
+trigger:  30MB, adj=-1000       | (protected, not a candidate)
+Killed: none (OOM may not have fired)
+OOM log:
+
+
+neutral=147MB | limit=172MB | BELOW threshold
+targeted: 20MB, adj=+10 | oom_score=674
+neutral:  147MB, adj=0          | oom_score=671
+trigger:  30MB, adj=-1000       | (protected, not a candidate)
+Killed: none (OOM may not have fired)
+OOM log:
+
+
+neutral=157MB | limit=182MB | BELOW threshold
+targeted: 20MB, adj=+10 | oom_score=674
+neutral:  157MB, adj=0          | oom_score=671
+trigger:  30MB, adj=-1000       | (protected, not a candidate)
+Killed: none (OOM may not have fired)
+OOM log:
+
+
+neutral=167MB | limit=192MB | BELOW threshold
+targeted: 20MB, adj=+10 | oom_score=674
+neutral:  167MB, adj=0          | oom_score=672
+trigger:  30MB, adj=-1000       | (protected, not a candidate)
+Killed: none (OOM may not have fired)
+OOM log:
+
+
+neutral=177MB | limit=202MB | AT    threshold
+targeted: 20MB, adj=+10 | oom_score=674
+neutral:  177MB, adj=0          | oom_score=672
+trigger:  30MB, adj=-1000       | (protected, not a candidate)
+Killed: none (OOM may not have fired)
+OOM log:
+
+
+neutral=187MB | limit=212MB | ABOVE threshold
+targeted: 20MB, adj=+10 | oom_score=674
+neutral:  187MB, adj=0          | oom_score=672
+trigger:  30MB, adj=-1000       | (protected, not a candidate)
+Killed: none (OOM may not have fired)
+OOM log:
+
+
+neutral=197MB | limit=222MB | ABOVE threshold
+targeted: 20MB, adj=+10 | oom_score=674
+neutral:  197MB, adj=0          | oom_score=673
+trigger:  30MB, adj=-1000       | (protected, not a candidate)
+Killed: neutral   ← adj still dominates
+OOM log:
+[ 3800.245617] Memory cgroup out of memory: Killed process 27235 (mem_worker) total-vm:204408kB, anon-rss:201728kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:444kB oom_score_adj:0
+
+neutral=207MB | limit=232MB | ABOVE threshold
+targeted: 20MB, adj=+10 | oom_score=674
+neutral:  207MB, adj=0          | oom_score=673
+trigger:  30MB, adj=-1000       | (protected, not a candidate)
+Killed: none (OOM may not have fired)
+OOM log:
+
+
+neutral=217MB | limit=242MB | ABOVE threshold
+targeted: 20MB, adj=+10 | oom_score=674
+neutral:  217MB, adj=0          | oom_score=674
+trigger:  30MB, adj=-1000       | (protected, not a candidate)
+Killed: none (OOM may not have fired)
+OOM log:
+
+
+neutral=227MB | limit=252MB | ABOVE threshold
+targeted: 20MB, adj=+10 | oom_score=674
+neutral:  227MB, adj=0          | oom_score=674
+trigger:  30MB, adj=-1000       | (protected, not a candidate)
+Killed: none (OOM may not have fired)
+OOM log:
+
+
+
+=== Final Summary ===
+Theoretical crossover: neutral = 177 MB
+System RAM: 15766 MB
+adj value tested: +10

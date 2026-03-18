@@ -1,0 +1,109 @@
+Experiment 5: oom_score_adj Crossover Threshold
+Run: Wed Mar 18 11:32:27 CET 2026
+System RAM      : 15766 MB
+targeted        : 20 MB, adj=+10
+Theoretical crossover at neutral = 177 MB
+
+=== neutral=127MB | BELOW threshold | limit=152MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 127MB, adj=0       | oom_score=670
+trigger  : grow 10MB steps → 15MB max, adj=-1000 (protected)
+Outcome: none killed  (OOM did not fire — check trigger size/limit)
+Kernel OOM log:
+(none)
+
+=== neutral=137MB | BELOW threshold | limit=162MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 137MB, adj=0       | oom_score=670
+trigger  : grow 10MB steps → 15MB max, adj=-1000 (protected)
+Outcome: none killed  (OOM did not fire — check trigger size/limit)
+Kernel OOM log:
+(none)
+
+=== neutral=147MB | BELOW threshold | limit=172MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 147MB, adj=0       | oom_score=671
+trigger  : grow 10MB steps → 15MB max, adj=-1000 (protected)
+Outcome: none killed  (OOM did not fire — check trigger size/limit)
+Kernel OOM log:
+(none)
+
+=== neutral=157MB | BELOW threshold | limit=182MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 157MB, adj=0       | oom_score=671
+trigger  : grow 10MB steps → 15MB max, adj=-1000 (protected)
+Outcome: none killed  (OOM did not fire — check trigger size/limit)
+Kernel OOM log:
+(none)
+
+=== neutral=167MB | BELOW threshold | limit=192MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 167MB, adj=0       | oom_score=672
+trigger  : grow 10MB steps → 15MB max, adj=-1000 (protected)
+Outcome: none killed  (OOM did not fire — check trigger size/limit)
+Kernel OOM log:
+(none)
+
+=== neutral=177MB | AT    threshold | limit=202MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 177MB, adj=0       | oom_score=672
+trigger  : grow 10MB steps → 15MB max, adj=-1000 (protected)
+Outcome: none killed  (OOM did not fire — check trigger size/limit)
+Kernel OOM log:
+(none)
+
+=== neutral=187MB | ABOVE threshold | limit=212MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 187MB, adj=0       | oom_score=672
+trigger  : grow 10MB steps → 15MB max, adj=-1000 (protected)
+Outcome: none killed  (OOM did not fire — check trigger size/limit)
+Kernel OOM log:
+(none)
+
+=== neutral=197MB | ABOVE threshold | limit=222MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 197MB, adj=0       | oom_score=673
+trigger  : grow 10MB steps → 15MB max, adj=-1000 (protected)
+Outcome: none killed  (OOM did not fire — check trigger size/limit)
+Kernel OOM log:
+(none)
+
+=== neutral=207MB | ABOVE threshold | limit=232MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 207MB, adj=0       | oom_score=673
+trigger  : grow 10MB steps → 15MB max, adj=-1000 (protected)
+Outcome: none killed  (OOM did not fire — check trigger size/limit)
+Kernel OOM log:
+(none)
+
+=== neutral=217MB | ABOVE threshold | limit=242MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 217MB, adj=0       | oom_score=674
+trigger  : grow 10MB steps → 15MB max, adj=-1000 (protected)
+Outcome: none killed  (OOM did not fire — check trigger size/limit)
+Kernel OOM log:
+(none)
+
+=== neutral=227MB | ABOVE threshold | limit=252MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 227MB, adj=0       | oom_score=674
+trigger  : grow 10MB steps → 15MB max, adj=-1000 (protected)
+Outcome: none killed  (OOM did not fire — check trigger size/limit)
+Kernel OOM log:
+(none)
+
+
+=== Results Table ===
+ neutral_size | expected   | outcome
+ -------------|-----------|----------------------------------------------
+ 127MB        | targeted   | none killed  (OOM did not fire — check trigger size/limit)
+ 137MB        | targeted   | none killed  (OOM did not fire — check trigger size/limit)
+ 147MB        | targeted   | none killed  (OOM did not fire — check trigger size/limit)
+ 157MB        | targeted   | none killed  (OOM did not fire — check trigger size/limit)
+ 167MB        | targeted   | none killed  (OOM did not fire — check trigger size/limit)
+ 177MB        | neutral    | none killed  (OOM did not fire — check trigger size/limit)
+ 187MB        | neutral    | none killed  (OOM did not fire — check trigger size/limit)
+ 197MB        | neutral    | none killed  (OOM did not fire — check trigger size/limit)
+ 207MB        | neutral    | none killed  (OOM did not fire — check trigger size/limit)
+ 217MB        | neutral    | none killed  (OOM did not fire — check trigger size/limit)
+ 227MB        | neutral    | none killed  (OOM did not fire — check trigger size/limit)

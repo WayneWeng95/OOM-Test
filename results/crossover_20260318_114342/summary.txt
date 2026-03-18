@@ -1,0 +1,99 @@
+Experiment 5: oom_score_adj Crossover Threshold
+Run: Wed Mar 18 11:43:42 CET 2026
+System RAM      : 15766 MB
+targeted        : 20 MB, adj=+10
+Theoretical crossover at neutral = 177 MB
+
+=== neutral=127MB | BELOW threshold | current=127MB → limit=117MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 127MB, adj=0       | oom_score=670
+Outcome: both killed
+Kernel OOM log:
+[ 5201.182235] Memory cgroup out of memory: Killed process 36954 (mem_worker) total-vm:132728kB, anon-rss:130048kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:308kB oom_score_adj:0
+[ 5201.202276] Memory cgroup out of memory: Killed process 36953 (mem_worker) total-vm:23160kB, anon-rss:20480kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:88kB oom_score_adj:10
+
+=== neutral=137MB | BELOW threshold | current=137MB → limit=127MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 137MB, adj=0       | oom_score=670
+Outcome: neutral  killed  ← 137MB size overcame adj=+10 bias (crossover)
+Kernel OOM log:
+[ 5212.352113] Memory cgroup out of memory: Killed process 37099 (mem_worker) total-vm:142968kB, anon-rss:140288kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:324kB oom_score_adj:0
+
+=== neutral=147MB | BELOW threshold | current=147MB → limit=137MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 147MB, adj=0       | oom_score=671
+Outcome: neutral  killed  ← 147MB size overcame adj=+10 bias (crossover)
+Kernel OOM log:
+[ 5223.581581] Memory cgroup out of memory: Killed process 37216 (mem_worker) total-vm:153208kB, anon-rss:150528kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:344kB oom_score_adj:0
+
+=== neutral=157MB | BELOW threshold | current=157MB → limit=147MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 157MB, adj=0       | oom_score=671
+Outcome: neutral  killed  ← 157MB size overcame adj=+10 bias (crossover)
+Kernel OOM log:
+[ 5234.689570] Memory cgroup out of memory: Killed process 37324 (mem_worker) total-vm:163448kB, anon-rss:160768kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:360kB oom_score_adj:0
+
+=== neutral=167MB | BELOW threshold | current=171MB → limit=161MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 167MB, adj=0       | oom_score=672
+Outcome: neutral  killed  ← 167MB size overcame adj=+10 bias (crossover)
+Kernel OOM log:
+[ 5245.567285] Memory cgroup out of memory: Killed process 37436 (mem_worker) total-vm:173688kB, anon-rss:171008kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:388kB oom_score_adj:0
+
+=== neutral=177MB | AT    threshold | current=177MB → limit=167MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 177MB, adj=0       | oom_score=672
+Outcome: neutral  killed  ← 177MB size overcame adj=+10 bias (crossover)
+Kernel OOM log:
+[ 5256.514255] Memory cgroup out of memory: Killed process 37556 (mem_worker) total-vm:183928kB, anon-rss:181248kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:400kB oom_score_adj:0
+
+=== neutral=187MB | ABOVE threshold | current=187MB → limit=177MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 187MB, adj=0       | oom_score=672
+Outcome: neutral  killed  ← 187MB size overcame adj=+10 bias (crossover)
+Kernel OOM log:
+[ 5267.503683] Memory cgroup out of memory: Killed process 37702 (mem_worker) total-vm:194168kB, anon-rss:191488kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:420kB oom_score_adj:0
+
+=== neutral=197MB | ABOVE threshold | current=169MB → limit=159MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 197MB, adj=0       | oom_score=673
+Outcome: neutral  killed  ← 197MB size overcame adj=+10 bias (crossover)
+Kernel OOM log:
+[ 5278.651880] Memory cgroup out of memory: Killed process 37879 (mem_worker) total-vm:204408kB, anon-rss:201728kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:448kB oom_score_adj:0
+
+=== neutral=207MB | ABOVE threshold | current=207MB → limit=197MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 207MB, adj=0       | oom_score=673
+Outcome: neutral  killed  ← 207MB size overcame adj=+10 bias (crossover)
+Kernel OOM log:
+[ 5289.784359] Memory cgroup out of memory: Killed process 37988 (mem_worker) total-vm:214648kB, anon-rss:211968kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:464kB oom_score_adj:0
+
+=== neutral=217MB | ABOVE threshold | current=217MB → limit=207MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 217MB, adj=0       | oom_score=674
+Outcome: neutral  killed  ← 217MB size overcame adj=+10 bias (crossover)
+Kernel OOM log:
+[ 5300.953080] Memory cgroup out of memory: Killed process 38100 (mem_worker) total-vm:224888kB, anon-rss:222208kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:484kB oom_score_adj:0
+
+=== neutral=227MB | ABOVE threshold | current=227MB → limit=217MB ===
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 227MB, adj=0       | oom_score=674
+Outcome: neutral  killed  ← 227MB size overcame adj=+10 bias (crossover)
+Kernel OOM log:
+[ 5311.874068] Memory cgroup out of memory: Killed process 38229 (mem_worker) total-vm:235128kB, anon-rss:232448kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:500kB oom_score_adj:0
+
+
+=== Results Table ===
+ neutral_size | expected   | outcome
+ -------------|-----------|----------------------------------------------
+ 127MB        | targeted   | both killed
+ 137MB        | targeted   | neutral  killed  ← 137MB size overcame adj=+10 bias (crossover)
+ 147MB        | targeted   | neutral  killed  ← 147MB size overcame adj=+10 bias (crossover)
+ 157MB        | targeted   | neutral  killed  ← 157MB size overcame adj=+10 bias (crossover)
+ 167MB        | targeted   | neutral  killed  ← 167MB size overcame adj=+10 bias (crossover)
+ 177MB        | neutral    | neutral  killed  ← 177MB size overcame adj=+10 bias (crossover)
+ 187MB        | neutral    | neutral  killed  ← 187MB size overcame adj=+10 bias (crossover)
+ 197MB        | neutral    | neutral  killed  ← 197MB size overcame adj=+10 bias (crossover)
+ 207MB        | neutral    | neutral  killed  ← 207MB size overcame adj=+10 bias (crossover)
+ 217MB        | neutral    | neutral  killed  ← 217MB size overcame adj=+10 bias (crossover)
+ 227MB        | neutral    | neutral  killed  ← 227MB size overcame adj=+10 bias (crossover)

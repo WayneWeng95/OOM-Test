@@ -1,0 +1,19 @@
+Experiment 4: Score Floor/Ceiling Tiebreak — Summary
+Date: Wed Mar 18 11:09:18 CET 2026
+Trials per scenario: 3
+Memory limit: 200M
+
+--- Scenario A (Ceiling tiebreak: large_A vs small_A, both +1000) ---
+Expected: large_A killed in all trials
+  Trial A1: Killed ->   small_A (PID 22289): ALIVE
+  Trial A2: Killed ->   small_A (PID 22438): ALIVE
+  Trial A3: Killed ->   small_A (PID 22565): ALIVE
+  large_A killed: 0/3
+
+--- Scenario B (Floor protection: huge_B at -1000, tiny_B at +1000) ---
+Expected: tiny_B killed, huge_B survives in all trials
+  Trial B1: Killed ->   tiny_B (PID 22680): KILLED
+  Trial B2: Killed ->   tiny_B (PID 22802): KILLED
+  Trial B3: Killed ->   tiny_B (PID 22986): KILLED
+  tiny_B killed: 3/3 (expected: all)
+  huge_B killed: 0/3 (expected: none)

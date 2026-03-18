@@ -1,24 +1,24 @@
 === Trial 3 ===
-Timestamp: 2026-03-14T16:10:13-06:00
+Timestamp: 2026-03-18T10:33:49+01:00
 Workers:
-  small:  20MB (PID 81428,  oom_score_adj=+1000 TARGETED)
-  medium: 50MB (PID 81429, oom_score_adj=0     default)
-  large:  80MB (PID 81430,  oom_score_adj=-1000 PROTECTED)
-Trigger: 100MB (PID 81475)
-Killed: small(81428) trigger(81475) 
+  small:  20MB (PID 12255,  oom_score_adj=+1000 TARGETED)
+  medium: 50MB (PID 12256, oom_score_adj=0     default)
+  large:  80MB (PID 12257,  oom_score_adj=-1000 PROTECTED)
+Trigger: 100MB (PID 12291)
+Killed: small(12255) trigger(12291) 
 Expected: small (because oom_score_adj=+1000)
 
 Kernel OOM log:
-[39011.132655] mem_worker invoked oom-killer: gfp_mask=0xcc0(GFP_KERNEL), order=0, oom_score_adj=0
-[39011.132700]  oom_kill_process+0x118/0x280
-[39011.132887] Memory cgroup stats for /oom_experiment_adj:
-[39011.132975] [  pid  ]   uid  tgid total_vm      rss rss_anon rss_file rss_shmem pgtables_bytes swapents oom_score_adj name
-[39011.132994] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=/,mems_allowed=0,oom_memcg=/oom_experiment_adj,task_memcg=/oom_experiment_adj,task=mem_worker,pid=81428,uid=0
-[39011.133012] Memory cgroup out of memory: Killed process 81428 (mem_worker) total-vm:23160kB, anon-rss:20480kB, file-rss:1536kB, shmem-rss:0kB, UID:0 pgtables:84kB oom_score_adj:1000
-[39011.135188] mem_worker invoked oom-killer: gfp_mask=0xcc0(GFP_KERNEL), order=0, oom_score_adj=0
-[39011.135214]  oom_kill_process+0x118/0x280
-[39011.135359] Memory cgroup stats for /oom_experiment_adj:
-[39011.135433] [  pid  ]   uid  tgid total_vm      rss rss_anon rss_file rss_shmem pgtables_bytes swapents oom_score_adj name
-[39011.135446] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=/,mems_allowed=0,oom_memcg=/oom_experiment_adj,task_memcg=/oom_experiment_adj,task=mem_worker,pid=81475,uid=0
-[39011.135456] Memory cgroup out of memory: Killed process 81475 (mem_worker) total-vm:105080kB, anon-rss:87424kB, file-rss:1536kB, shmem-rss:0kB, UID:0 pgtables:220kB oom_score_adj:0
+[ 1000.343684] mem_worker invoked oom-killer: gfp_mask=0xcc0(GFP_KERNEL), order=0, oom_score_adj=0
+[ 1000.343711]  oom_kill_process+0x100/0x1a0
+[ 1000.343845] Memory cgroup stats for /oom_experiment_adj:
+[ 1000.343964] [  pid  ]   uid  tgid total_vm      rss pgtables_bytes swapents oom_score_adj name
+[ 1000.343999] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=/,mems_allowed=0,oom_memcg=/oom_experiment_adj,task_memcg=/oom_experiment_adj,task=mem_worker,pid=12559,uid=0
+[ 1000.344015] Memory cgroup out of memory: Killed process 12559 (mem_worker) total-vm:23160kB, anon-rss:20480kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:88kB oom_score_adj:1000
+[ 1000.349384] mem_worker invoked oom-killer: gfp_mask=0xcc0(GFP_KERNEL), order=0, oom_score_adj=0
+[ 1000.349407]  oom_kill_process+0x100/0x1a0
+[ 1000.349559] Memory cgroup stats for /oom_experiment_adj:
+[ 1000.349662] [  pid  ]   uid  tgid total_vm      rss pgtables_bytes swapents oom_score_adj name
+[ 1000.349671] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=/,mems_allowed=0,oom_memcg=/oom_experiment_adj,task_memcg=/oom_experiment_adj,task=mem_worker,pid=12595,uid=0
+[ 1000.349681] Memory cgroup out of memory: Killed process 12595 (mem_worker) total-vm:105080kB, anon-rss:97280kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:236kB oom_score_adj:0
 

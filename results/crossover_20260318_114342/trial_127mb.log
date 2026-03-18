@@ -1,0 +1,10 @@
+Trial: neutral=127MB [BELOW]
+Timestamp: 2026-03-18T11:43:50+01:00
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 127MB, adj=0       | oom_score=670
+cgroup   : current=127MB, limit set to 117MB
+Outcome  : both killed
+
+Kernel OOM log:
+[ 5201.182235] Memory cgroup out of memory: Killed process 36954 (mem_worker) total-vm:132728kB, anon-rss:130048kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:308kB oom_score_adj:0
+[ 5201.202276] Memory cgroup out of memory: Killed process 36953 (mem_worker) total-vm:23160kB, anon-rss:20480kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:88kB oom_score_adj:10

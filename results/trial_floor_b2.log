@@ -1,0 +1,29 @@
+=== Scenario B — Trial 2 ===
+Timestamp: 2026-03-18T11:09:05+01:00
+Setup:
+  tiny_B:    10MB, oom_score_adj=+1000  (TARGETED)
+  medium_B:  50MB, oom_score_adj=0      (default)
+  huge_B:   100MB, oom_score_adj=-1000  (PROTECTED)
+  trigger_B: 100MB (OOM trigger)
+Question: Does -1000 protect a 100MB process from being killed?
+Expected: tiny_B killed (not huge_B, despite huge_B using 10x more memory)
+Killed:   tiny_B (PID 22802): KILLED
+  medium_B (PID 22803): ALIVE
+  huge_B (PID 22804): ALIVE
+  trigger_B (PID 22854): KILLED
+tiny_B trigger_B 
+
+Kernel OOM log:
+[ 3116.484585] mem_worker invoked oom-killer: gfp_mask=0xcc0(GFP_KERNEL), order=0, oom_score_adj=0
+[ 3116.484637]  oom_kill_process+0x100/0x1a0
+[ 3116.484789] Memory cgroup stats for /oom_experiment_floor:
+[ 3116.484933] [  pid  ]   uid  tgid total_vm      rss pgtables_bytes swapents oom_score_adj name
+[ 3116.484948] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=/,mems_allowed=0,oom_memcg=/oom_experiment_floor,task_memcg=/oom_experiment_floor,task=mem_worker,pid=23125,uid=0
+[ 3116.484984] Memory cgroup out of memory: Killed process 23125 (mem_worker) total-vm:12920kB, anon-rss:10240kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:64kB oom_score_adj:1000
+[ 3116.490307] mem_worker invoked oom-killer: gfp_mask=0xcc0(GFP_KERNEL), order=0, oom_score_adj=0
+[ 3116.490377]  oom_kill_process+0x100/0x1a0
+[ 3116.490524] Memory cgroup stats for /oom_experiment_floor:
+[ 3116.490646] [  pid  ]   uid  tgid total_vm      rss pgtables_bytes swapents oom_score_adj name
+[ 3116.490659] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=/,mems_allowed=0,oom_memcg=/oom_experiment_floor,task_memcg=/oom_experiment_floor,task=mem_worker,pid=23177,uid=0
+[ 3116.490676] Memory cgroup out of memory: Killed process 23177 (mem_worker) total-vm:105080kB, anon-rss:62464kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:172kB oom_score_adj:0
+

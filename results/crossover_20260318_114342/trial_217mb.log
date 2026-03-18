@@ -1,0 +1,9 @@
+Trial: neutral=217MB [ABOVE]
+Timestamp: 2026-03-18T11:45:29+01:00
+targeted : 20MB, adj=+10  | oom_score=674
+neutral  : 217MB, adj=0       | oom_score=674
+cgroup   : current=217MB, limit set to 207MB
+Outcome  : neutral  killed  ← 217MB size overcame adj=+10 bias (crossover)
+
+Kernel OOM log:
+[ 5300.953080] Memory cgroup out of memory: Killed process 38100 (mem_worker) total-vm:224888kB, anon-rss:222208kB, file-rss:1408kB, shmem-rss:0kB, UID:0 pgtables:484kB oom_score_adj:0

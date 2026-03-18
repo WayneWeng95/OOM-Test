@@ -1,19 +1,13 @@
 OOM Killer oom_score_adj Override Experiment - Summary
-Date: Sat Mar 14 04:10:36 PM MDT 2026
+Date: Wed Mar 18 10:34:12 CET 2026
 Trials: 5
 Memory limit: 200M
 
 Per-trial results:
-  Trial 1: Killed -> small(81173) trigger(81227) 
-  Trial 2: Killed -> none
-  Trial 3: Killed -> small(81428) trigger(81475) 
-  Trial 4: Killed -> small(81540) trigger(81587) 
-  Trial 5: Killed -> small(81631) trigger(81678) 
+  Trial 1: Killed -> small(11997) trigger(12049) 
+  Trial 2: Killed -> small(12134) trigger(12170) 
+  Trial 3: Killed -> small(12255) trigger(12291) 
+  Trial 4: Killed -> small(12374) trigger(12411) 
+  Trial 5: Killed -> small(12491) trigger(12527) 
 
-RESULT: PARTIAL/UNEXPECTED - 'small' was killed in 4/5 trials.
-Unique outcomes:
-      1 Killed: small(81631) trigger(81678) 
-      1 Killed: small(81540) trigger(81587) 
-      1 Killed: small(81428) trigger(81475) 
-      1 Killed: small(81173) trigger(81227) 
-      1 Killed: none
+RESULT: SUCCESS - oom_score_adj override worked. 'small' was killed in all 5 trials despite being the smallest process.
