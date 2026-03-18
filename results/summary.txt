@@ -1,24 +1,29 @@
 OOM Killer Determinism Experiment - Summary
-Date: Sat Mar 14 03:59:11 PM MDT 2026
+Date: Wed Mar 18 10:26:41 CET 2026
 Trials: 10
 Memory limit: 200M
 
 Per-trial results:
-  Trial 1: Killed -> none
-  Trial 2: Killed -> none
-  Trial 3: Killed -> none
-  Trial 4: Killed -> trigger(78502) 
-  Trial 5: Killed -> trigger(78595) 
-  Trial 6: Killed -> none
-  Trial 7: Killed -> trigger(78764) 
-  Trial 8: Killed -> none
-  Trial 9: Killed -> none
-  Trial 10: Killed -> trigger(79020) 
+  Trial 1: Killed -> large(7825) 
+  Trial 2: Killed -> trigger(8006) 
+  Trial 3: Killed -> trigger(8136) 
+  Trial 4: Killed -> large(8227) 
+  Trial 5: Killed -> trigger(8409) 
+  Trial 6: Killed -> large(8485) 
+  Trial 7: Killed -> large(8613) 
+  Trial 8: Killed -> large(8781) 
+  Trial 9: Killed -> large(8970) 
+  Trial 10: Killed -> trigger(9142) 
 
 RESULT: NON-DETERMINISTIC - Different processes killed across trials.
 Unique outcomes:
-      6 Killed: none
-      1 Killed: trigger(79020) 
-      1 Killed: trigger(78764) 
-      1 Killed: trigger(78595) 
-      1 Killed: trigger(78502) 
+      1 Killed: trigger(9142) 
+      1 Killed: trigger(8409) 
+      1 Killed: trigger(8136) 
+      1 Killed: trigger(8006) 
+      1 Killed: large(8970) 
+      1 Killed: large(8781) 
+      1 Killed: large(8613) 
+      1 Killed: large(8485) 
+      1 Killed: large(8227) 
+      1 Killed: large(7825) 
