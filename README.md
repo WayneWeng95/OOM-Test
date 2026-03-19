@@ -1,161 +1,160 @@
-# OOM Killer Determinism Experiment
+# OOM Killer Experiment Suite
 
 ## Overview
 
-This experiment tests whether the Linux OOM killer behaves deterministically:
-given the same memory conditions, does it always kill the same process?
+A set of experiments testing how the Linux OOM killer selects victims inside cgroup v2 memory limits — covering baseline determinism, `oom_score_adj` tuning, container kill patterns, score floor/ceiling tiebreaks, and the adj crossover threshold.
+
+Key finding: the OOM killer behaves fundamentally differently inside a cgroup than at the system level. See `summary.md` for the full analysis.
 
 ## Files
 
+### Binaries (compile before running)
+
+| Source | Binary | Purpose |
+|--------|--------|---------|
+| `mem_worker.c` | `mem_worker` | Allocates a fixed MB, touches all pages, holds until killed |
+| `mem_worker_grow.c` | `mem_worker_grow` | Allocates memory gradually (used by experiment 03) |
+| `mem_controller.c` | `mem_controller` | Manages worker respawn cycles (used by experiment 03) |
+
+### Experiments
+
+| Script | Results dir | Summary |
+|--------|-------------|---------|
+| `01_setup_and_run.sh` | `01_results/` | Baseline: does the OOM killer always kill the same process? |
+| `02_score_adj_override.sh` | `02_results/` | Can `oom_score_adj` override natural size-based selection? |
+| `03_container_oom_pattern.sh` | `03_results/` | Kill sequence determinism across parallel containers |
+| `04_score_floor_tiebreak.sh` | `04_results/` | Tiebreak behavior at adj ceiling (+1000) and floor (-1000) |
+| `05_adj_crossover.sh` | `05_results/` | At what size difference does adj bias get overcome? |
+| `probe_cgroup_oom.sh` | _(stdout only)_ | Quick sanity check: does cgroup OOM kill work on this system? |
+
+### Documentation
+
 | File | Purpose |
 |------|---------|
-| `mem_worker.c` | C program that allocates a fixed amount of memory and holds it |
-| `01_setup_and_run.sh` | Experiment 1: baseline determinism test |
-| `02_score_adj_override.sh` | Experiment 2: prove oom_score_adj overrides natural selection |
+| `summary.md` | Key findings across all experiments |
+| `02_summary.md` | Design and analysis for experiment 02 |
+| `thoughts.md` | Raw observations and notes |
+| `test_design.md` | Test design notes |
 
 ## Prerequisites
 
-- **Linux kernel 4.19+** with cgroups v2
-- **Root access** (cgroup manipulation requires it)
-- **GCC** to compile the worker
+- Linux kernel 4.19+ with **cgroups v2**
+- **Root access**
+- **GCC**
 
-Check cgroups v2 is available:
 ```bash
+# Verify cgroups v2
 mount | grep cgroup2
-# Should show: cgroup2 on /sys/fs/cgroup type cgroup2 ...
+# Expected: cgroup2 on /sys/fs/cgroup type cgroup2 ...
 ```
 
 ## Quick Start
 
 ```bash
-# 1. Compile the memory worker
+# 1. Compile all binaries
 gcc -O2 -o mem_worker mem_worker.c
+gcc -O2 -o mem_worker_grow mem_worker_grow.c
+gcc -O2 -o mem_controller mem_controller.c
 
-# 2. Run Experiment 1 (baseline determinism)
+# 2. (Recommended) Disable swap for cleaner OOM observation
+sudo swapoff -a
+
+# 3. Sanity check — confirms OOM kill works on this system
+sudo bash probe_cgroup_oom.sh
+
+# 4. Run experiments
 sudo bash 01_setup_and_run.sh
-
-# 3. Run Experiment 2 (oom_score_adj override)
 sudo bash 02_score_adj_override.sh
+sudo bash 03_container_oom_pattern.sh
+sudo bash 04_score_floor_tiebreak.sh
+sudo bash 05_adj_crossover.sh
+
+# 5. Re-enable swap when done
+sudo swapon -a
 ```
 
-## Experiment 1: Baseline Determinism
+Each run creates a timestamped subfolder inside its results directory (e.g., `01_results/20260319_143201/`), so repeated runs never overwrite each other.
 
-### Design
+## Experiment Summaries
 
-```
-┌─────────────────────────────────────────────────┐
-│  Memory Cgroup: limit = 200 MB, swap disabled   │
-│                                                  │
-│  ┌──────────┐ ┌──────────┐ ┌──────────────────┐ │
-│  │  small    │ │  medium  │ │     large        │ │
-│  │  20 MB   │ │  50 MB   │ │     80 MB        │ │
-│  └──────────┘ └──────────┘ └──────────────────┘ │
-│                                                  │
-│  Total used: ~150 MB (within limit)              │
-│                                                  │
-│  Then spawn TRIGGER (100 MB)                     │
-│  Total would be ~250 MB -> exceeds 200 MB limit  │
-│  OOM killer fires!                               │
-└─────────────────────────────────────────────────┘
-```
-
-### Expected Result
-
-- The **large** process (80 MB RSS) should be killed every time
-- The OOM killer's `oom_badness()` score is roughly proportional to RSS
-- With 10 identical trials, the same process should be the victim each time
-- **Verdict: DETERMINISTIC**
-
-### What to Look For
-
-The summary at the end should read:
-```
-RESULT: DETERMINISTIC - Same process killed in all 10 trials.
-```
-
-## Experiment 2: oom_score_adj Override
-
-### Design
-
-Same setup as Experiment 1, but before triggering OOM:
-- Set `oom_score_adj = -1000` on the **large** process (protect it)
-- Set `oom_score_adj = +1000` on the **small** process (target it)
-
-### Expected Result
-
-- The **small** process (only 20 MB!) should now be killed instead
-- This proves `oom_score_adj` overrides the natural RSS-based scoring
-- The large process survives despite being the biggest memory consumer
-
-## Understanding the Results
-
-### Why is this deterministic?
-
-The OOM killer computes `oom_badness()` for each candidate:
+### 01 — Baseline Determinism
 
 ```
-score = (process_RSS / total_available_memory) * 1000 + oom_score_adj
+cgroup limit = 200 MB, swap off
+  small   20 MB  adj=0
+  medium  50 MB  adj=0
+  large   80 MB  adj=0   ← expected victim (highest RSS)
+  trigger 100 MB         ← pushes total to ~250 MB → OOM fires
 ```
 
-Given identical RSS values and identical `oom_score_adj` values, the
-score is always the same, so the same process is always selected.
+Expected: `large` killed in every trial. If non-deterministic, suspect the MAP_POPULATE cgroup race (see `summary.md` Finding 4).
 
-### When would it NOT be deterministic?
+### 02 — `oom_score_adj` Override
 
-- If worker processes don't fully allocate before the trigger fires
-  (race condition in page faulting)
-- If kernel background reclaim frees different amounts per trial
-- If KSM (Kernel Same-page Merging) is active and deduplicates pages
-- If swap is enabled and swaps different pages per run
+Same layout as 01, but adj is set after workers are resident:
 
-The experiment mitigates these by:
-1. Using `MAP_POPULATE` to pre-fault all pages
-2. Writing unique patterns per page to defeat KSM
-3. Disabling swap in the cgroup
-4. Adding a sleep between allocation and trigger
+```
+  large   80 MB  adj=-1000  ← protected
+  medium  50 MB  adj=0
+  small   20 MB  adj=+1000  ← targeted
+```
 
-## Going Further
+Expected: `small` killed despite being the smallest. Extreme adj values (+1000/-1000) reliably flip victim selection even inside a cgroup. See `02_summary.md` for score math.
 
-### Variation ideas:
+### 03 — Container Kill Pattern
 
-1. **Equal-size workers**: Spawn 3 workers with identical RSS.
-   Which one gets killed? (Hint: process age and PID order matter
-   as tiebreakers.)
+Runs 4 parallel cgroups simultaneously, each with a controller managing 4 gradually-growing workers through 10 OOM cycles. Measures whether the kill sequence (which slot dies first, second, …) is consistent across containers and across trials.
 
-2. **Dynamic memory**: Have workers continuously allocate/free memory
-   in patterns. Does the OOM killer still pick consistently?
+### 04 — Score Floor/Ceiling Tiebreak
 
-3. **Watch in real time**:
-   ```bash
-   # In another terminal, watch OOM events live:
-   sudo dmesg -w | grep -i oom
+**Scenario A:** Two processes both at adj=+1000 (score ceiling). Tiebreaker is RSS — the larger one should die.
 
-   # Or watch cgroup memory stats:
-   watch -n 0.5 cat /sys/fs/cgroup/oom_experiment/memory.current
-   ```
+**Scenario B:** `huge` (100 MB, adj=-1000) vs `tiny` (10 MB, adj=+1000). Tests that -1000 fully exempts a process even when it holds 10× more memory than the target.
 
-4. **eBPF tracing**: Use bpftrace to hook into the OOM killer path:
-   ```bash
-   sudo bpftrace -e 'kprobe:oom_kill_process {
-       printf("OOM kill: victim=%d\n", ((struct task_struct *)arg1)->pid);
-   }'
-   ```
+### 05 — adj Crossover Threshold
 
-5. **Read kernel OOM diagnostic**: After an OOM event, dmesg will show
-   a full memory dump including per-process scores. Compare across trials.
+Sweeps `neutral` process size around the theoretical crossover point where size difference overcomes adj bias. Critically, uses the **cgroup formula** denominator (cgroup limit, not system RAM):
+
+```
+crossover diff = adj × cgroup_limit / 1000
+```
+
+For adj=10 and a ~150 MB cgroup, the crossover is only ~1.5 MB — far smaller than the system-level formula predicts (~158 MB). See `summary.md` for the full table.
+
+## Key Findings
+
+1. **`/proc/pid/oom_score` is misleading inside cgroups** — it uses system RAM as the denominator, not the cgroup limit.
+2. **The adj crossover threshold shrinks by ~100×** inside a cgroup relative to system-level OOM.
+3. **Intermediate adj values give far weaker protection than expected** in container-level OOM (the common production case).
+4. **MAP_POPULATE / cgroup membership race** — fast-allocating processes can have pages charged to the root cgroup if `MAP_POPULATE` completes before the PID is written to `cgroup.procs`. This applies to any Linux system, not just WSL2.
+
+## Observing OOM Events Live
+
+```bash
+# Watch kernel OOM messages in real time
+sudo dmesg -w | grep -i oom
+
+# Watch cgroup memory usage
+watch -n 0.5 cat /sys/fs/cgroup/oom_experiment/memory.current
+
+# See per-process OOM scores
+cat /proc/<pid>/oom_score
+cat /proc/<pid>/oom_score_adj
+```
 
 ## Troubleshooting
 
 **"cgroups v2 not mounted"**
-Some distros still default to v1. You can switch with a kernel boot parameter:
+Some distros default to v1. Enable v2 with the kernel boot parameter:
 ```
 systemd.unified_cgroup_hierarchy=1
 ```
 
 **Workers aren't being killed**
-The memory limit might be too high relative to worker sizes. Increase
-`TRIGGER_MB` or decrease `MEM_LIMIT`.
+Increase `TRIGGER_MB` or decrease `MEM_LIMIT` so the overage is large enough to force a kill.
 
-**Inconsistent results**
-Try increasing the sleep time between worker allocation and trigger
-to ensure all pages are fully resident before OOM fires.
+**Non-deterministic results in experiment 01**
+Increase the `sleep` between worker allocation and trigger launch to ensure all pages are fully resident before OOM fires. Also confirm swap is disabled (`free -h` should show 0 swap).
+
+**OOM fires but kills the wrong process**
+Check `dmesg` for double-kill events — the limit may be set too aggressively narrow, causing a second OOM immediately after the first kill.

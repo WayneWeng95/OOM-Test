@@ -31,7 +31,7 @@ set -euo pipefail
 
 CGROUP_NAME="oom_experiment_crossover"
 CGROUP_PATH="/sys/fs/cgroup/${CGROUP_NAME}"
-LOG_DIR="./results"
+LOG_DIR="./05_results"
 WORKER_BINARY="./mem_worker"
 
 # --- Tunable parameters ---
@@ -64,7 +64,7 @@ CROSSOVER_DIFF_MB=$(( ADJ_VALUE * TOTAL_RAM_MB / 1000 ))
 NEUTRAL_CROSSOVER_MB=$(( SMALL_MB + CROSSOVER_DIFF_MB ))
 
 # --- Per-run output folder ---
-RUN_DIR="${LOG_DIR}/crossover_$(date +%Y%m%d_%H%M%S)"
+RUN_DIR="${LOG_DIR}/$(date +%Y%m%d_%H%M%S)"
 mkdir -p "${RUN_DIR}"
 SUMMARY_FILE="${RUN_DIR}/summary.txt"
 

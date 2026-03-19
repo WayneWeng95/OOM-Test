@@ -19,7 +19,8 @@ MEM_LIMIT="200M"      # per cgroup  (4 × 100 MB workers = 400 MB > 300 MB → O
 WORKER_MAX_MB=100     # each worker grows to 100 MB
 NUM_CYCLES=10         # OOM events to observe per container per trial
 NUM_TRIALS=3
-LOG_DIR="./results"
+LOG_DIR="./03_results"
+RUN_DIR="${LOG_DIR}/$(date +%Y%m%d_%H%M%S)"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORKER_BIN="${SCRIPT_DIR}/mem_worker_grow"
 CONTROLLER_BIN="${SCRIPT_DIR}/mem_controller"
@@ -47,7 +48,7 @@ if ! grep -q "^cgroup2" /proc/mounts 2>/dev/null && \
     exit 1
 fi
 
-mkdir -p "${LOG_DIR}"
+mkdir -p "${RUN_DIR}"
 
 # ── Helper: timestamp ──────────────────────────────────────────────────────────
 ts() { date '+%Y-%m-%dT%H:%M:%S'; }
@@ -104,7 +105,7 @@ for trial in $(seq 1 "$NUM_TRIALS"); do
     declare -a ctrl_logs=()
 
     for c in $(seq 0 $(( NUM_CONTAINERS - 1 ))); do
-        logfile="${LOG_DIR}/trial_${trial}_container_${c}.log"
+        logfile="${RUN_DIR}/trial_${trial}_container_${c}.log"
         ctrl_logs+=("$logfile")
         cg="${CGROUP_ROOT}/${CGROUP_PREFIX}_${c}"
 
@@ -145,13 +146,13 @@ for trial in $(seq 1 "$NUM_TRIALS"); do
     echo "  All controllers done.  ($(ts))"
 
     # -- Extract and compare sequences --
-    comparison_file="${LOG_DIR}/trial_${trial}_comparison.txt"
+    comparison_file="${RUN_DIR}/trial_${trial}_comparison.txt"
     {
         echo "TRIAL ${trial} COMPARISON  ($(ts))"
         echo ""
         sequences=()
         for c in $(seq 0 $(( NUM_CONTAINERS - 1 ))); do
-            logfile="${LOG_DIR}/trial_${trial}_container_${c}.log"
+            logfile="${RUN_DIR}/trial_${trial}_container_${c}.log"
             seq=$(extract_sequence "$logfile")
             sequences+=("$seq")
             echo "  container=${c}  sequence=${seq}"
@@ -186,7 +187,7 @@ for trial in $(seq 1 "$NUM_TRIALS"); do
 done
 
 # ── Final cross-trial analysis ─────────────────────────────────────────────────
-summary_file="${LOG_DIR}/final_summary.txt"
+summary_file="${RUN_DIR}/final_summary.txt"
 {
     echo "═══════════════════════════════════════════════════════════════"
     echo "  EXPERIMENT 03 FINAL SUMMARY"
@@ -250,10 +251,10 @@ summary_file="${LOG_DIR}/final_summary.txt"
         echo "  CROSS_TRIAL:     NON-DETERMINISTIC — kill sequence varies across trials."
     fi
     echo ""
-    echo "  See individual logs: ${LOG_DIR}/trial_T_container_C.log"
-    echo "  See per-trial comparisons: ${LOG_DIR}/trial_T_comparison.txt"
+    echo "  See individual logs: ${RUN_DIR}/trial_T_container_C.log"
+    echo "  See per-trial comparisons: ${RUN_DIR}/trial_T_comparison.txt"
 
 } | tee "$summary_file"
 
 echo ""
-echo "Done. Results in ${LOG_DIR}/"
+echo "Done. Results in ${RUN_DIR}/"

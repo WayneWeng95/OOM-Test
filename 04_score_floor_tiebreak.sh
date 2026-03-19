@@ -24,7 +24,8 @@ CGROUP_NAME="oom_experiment_floor"
 CGROUP_PATH="/sys/fs/cgroup/${CGROUP_NAME}"
 MEM_LIMIT="200M"
 NUM_TRIALS=3
-LOG_DIR="./results"
+LOG_DIR="./04_results"
+RUN_DIR="${LOG_DIR}/$(date +%Y%m%d_%H%M%S)"
 WORKER_BINARY="./mem_worker"
 
 # --- Preflight checks ---
@@ -99,7 +100,7 @@ check_survivors() {
 
 run_scenario_a() {
     local trial_num=$1
-    local result_file="${LOG_DIR}/trial_floor_a${trial_num}.log"
+    local result_file="${RUN_DIR}/trial_floor_a${trial_num}.log"
 
     echo ""
     echo "========================================"
@@ -186,7 +187,7 @@ run_scenario_a() {
 
 run_scenario_b() {
     local trial_num=$1
-    local result_file="${LOG_DIR}/trial_floor_b${trial_num}.log"
+    local result_file="${RUN_DIR}/trial_floor_b${trial_num}.log"
 
     echo ""
     echo "========================================"
@@ -270,7 +271,7 @@ run_scenario_b() {
 # ============================================================================
 
 trap cleanup EXIT
-mkdir -p "${LOG_DIR}"
+mkdir -p "${RUN_DIR}"
 
 echo "============================================================"
 echo " Experiment 4: Score Floor/Ceiling Tiebreak Behavior"
@@ -298,7 +299,7 @@ echo "============================================================"
 echo " Summary"
 echo "============================================================"
 
-summary_file="${LOG_DIR}/summary_floor.txt"
+summary_file="${RUN_DIR}/summary_floor.txt"
 {
     echo "Experiment 4: Score Floor/Ceiling Tiebreak — Summary"
     echo "Date: $(date)"
@@ -309,12 +310,12 @@ summary_file="${LOG_DIR}/summary_floor.txt"
     echo "--- Scenario A (Ceiling tiebreak: large_A vs small_A, both +1000) ---"
     echo "Expected: large_A killed in all trials"
     for i in $(seq 1 ${NUM_TRIALS}); do
-        local_killed=$(grep "^Killed:" "${LOG_DIR}/trial_floor_a${i}.log" | sed 's/Killed: //')
+        local_killed=$(grep "^Killed:" "${RUN_DIR}/trial_floor_a${i}.log" | sed 's/Killed: //')
         echo "  Trial A${i}: Killed -> ${local_killed:-none}"
     done
 
     a_correct=$(for i in $(seq 1 ${NUM_TRIALS}); do
-        grep "^Killed:" "${LOG_DIR}/trial_floor_a${i}.log"
+        grep "^Killed:" "${RUN_DIR}/trial_floor_a${i}.log"
     done | grep -c "large_A" || true)
     echo "  large_A killed: ${a_correct}/${NUM_TRIALS}"
     echo ""
@@ -322,15 +323,15 @@ summary_file="${LOG_DIR}/summary_floor.txt"
     echo "--- Scenario B (Floor protection: huge_B at -1000, tiny_B at +1000) ---"
     echo "Expected: tiny_B killed, huge_B survives in all trials"
     for i in $(seq 1 ${NUM_TRIALS}); do
-        local_killed=$(grep "^Killed:" "${LOG_DIR}/trial_floor_b${i}.log" | sed 's/Killed: //')
+        local_killed=$(grep "^Killed:" "${RUN_DIR}/trial_floor_b${i}.log" | sed 's/Killed: //')
         echo "  Trial B${i}: Killed -> ${local_killed:-none}"
     done
 
     b_tiny=$(for i in $(seq 1 ${NUM_TRIALS}); do
-        grep "^Killed:" "${LOG_DIR}/trial_floor_b${i}.log"
+        grep "^Killed:" "${RUN_DIR}/trial_floor_b${i}.log"
     done | grep -c "tiny_B" || true)
     b_huge=$(for i in $(seq 1 ${NUM_TRIALS}); do
-        grep "^Killed:" "${LOG_DIR}/trial_floor_b${i}.log"
+        grep "^Killed:" "${RUN_DIR}/trial_floor_b${i}.log"
     done | grep -c "huge_B" || true)
     echo "  tiny_B killed: ${b_tiny}/${NUM_TRIALS} (expected: all)"
     echo "  huge_B killed: ${b_huge}/${NUM_TRIALS} (expected: none)"
@@ -338,4 +339,4 @@ summary_file="${LOG_DIR}/summary_floor.txt"
 } | tee "${summary_file}"
 
 echo ""
-echo "Full results saved in ${LOG_DIR}/"
+echo "Full results saved in ${RUN_DIR}/"

@@ -1,0 +1,23 @@
+=== Scenario A — Trial 3 ===
+Timestamp: 2026-03-19T15:24:15-06:00
+Setup:
+  small_A:  20MB, oom_score_adj=+1000  (CEILING)
+  medium_A: 50MB, oom_score_adj=0      (default)
+  large_A:  80MB, oom_score_adj=+1000  (CEILING)
+  trigger_A: 120MB (OOM trigger)
+Question: When two processes both hit +1000, which dies?
+Expected: large_A (tiebreak goes to higher memory usage)
+Killed:   small_A (PID 94764): ALIVE
+  medium_A (PID 94765): ALIVE
+  large_A (PID 94766): KILLED
+  trigger_A (PID 94787): ALIVE
+large_A 
+
+Kernel OOM log:
+[44323.765608] mem_worker invoked oom-killer: gfp_mask=0xcc0(GFP_KERNEL), order=0, oom_score_adj=0
+[44323.765653]  oom_kill_process+0x118/0x280
+[44323.765839] Memory cgroup stats for /oom_experiment_floor:
+[44323.765936] [  pid  ]   uid  tgid total_vm      rss rss_anon rss_file rss_shmem pgtables_bytes swapents oom_score_adj name
+[44323.765956] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=/,mems_allowed=0,oom_memcg=/oom_experiment_floor,task_memcg=/oom_experiment_floor,task=mem_worker,pid=94766,uid=0
+[44323.765972] Memory cgroup out of memory: Killed process 94766 (mem_worker) total-vm:84600kB, anon-rss:81920kB, file-rss:1536kB, shmem-rss:0kB, UID:0 pgtables:204kB oom_score_adj:1000
+

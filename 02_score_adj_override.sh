@@ -19,7 +19,8 @@ CGROUP_NAME="oom_experiment_adj"
 CGROUP_PATH="/sys/fs/cgroup/${CGROUP_NAME}"
 MEM_LIMIT="200M"
 NUM_TRIALS=5
-LOG_DIR="./results"
+LOG_DIR="./02_results"
+RUN_DIR="${LOG_DIR}/$(date +%Y%m%d_%H%M%S)"
 WORKER_BINARY="./mem_worker"
 
 # --- Preflight checks ---
@@ -79,7 +80,7 @@ setup_cgroup() {
 
 run_trial() {
     local trial_num=$1
-    local result_file="${LOG_DIR}/trial_adj_${trial_num}.log"
+    local result_file="${RUN_DIR}/trial_adj_${trial_num}.log"
 
     echo ""
     echo "========================================"
@@ -190,7 +191,7 @@ run_trial() {
 # --- Main ---
 trap cleanup EXIT
 
-mkdir -p "${LOG_DIR}"
+mkdir -p "${RUN_DIR}"
 
 echo "============================================="
 echo " Experiment 2: oom_score_adj Override Test"
@@ -215,7 +216,7 @@ echo "============================================="
 echo " Summary: Did oom_score_adj override size?"
 echo "============================================="
 
-summary_file="${LOG_DIR}/summary_adj.txt"
+summary_file="${RUN_DIR}/summary_adj.txt"
 {
     echo "OOM Killer oom_score_adj Override Experiment - Summary"
     echo "Date: $(date)"
@@ -224,18 +225,18 @@ summary_file="${LOG_DIR}/summary_adj.txt"
     echo ""
     echo "Per-trial results:"
     for i in $(seq 1 ${NUM_TRIALS}); do
-        killed=$(grep "^Killed:" "${LOG_DIR}/trial_adj_${i}.log" | sed 's/Killed: //')
+        killed=$(grep "^Killed:" "${RUN_DIR}/trial_adj_${i}.log" | sed 's/Killed: //')
         echo "  Trial ${i}: Killed -> ${killed}"
     done
     echo ""
 
     # Check if oom_score_adj override worked
     unique_results=$(for i in $(seq 1 ${NUM_TRIALS}); do
-        grep "^Killed:" "${LOG_DIR}/trial_adj_${i}.log"
+        grep "^Killed:" "${RUN_DIR}/trial_adj_${i}.log"
     done | sort -u | wc -l)
 
     all_small=$(for i in $(seq 1 ${NUM_TRIALS}); do
-        grep "^Killed:" "${LOG_DIR}/trial_adj_${i}.log"
+        grep "^Killed:" "${RUN_DIR}/trial_adj_${i}.log"
     done | grep -c "small" || true)
 
     if [[ "$all_small" -eq "$NUM_TRIALS" ]]; then
@@ -244,10 +245,10 @@ summary_file="${LOG_DIR}/summary_adj.txt"
         echo "RESULT: PARTIAL/UNEXPECTED - 'small' was killed in ${all_small}/${NUM_TRIALS} trials."
         echo "Unique outcomes:"
         for i in $(seq 1 ${NUM_TRIALS}); do
-            grep "^Killed:" "${LOG_DIR}/trial_adj_${i}.log"
+            grep "^Killed:" "${RUN_DIR}/trial_adj_${i}.log"
         done | sort | uniq -c | sort -rn
     fi
 } | tee "${summary_file}"
 
 echo ""
-echo "Full results saved in ${LOG_DIR}/"
+echo "Full results saved in ${RUN_DIR}/"

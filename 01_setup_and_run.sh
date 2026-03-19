@@ -23,7 +23,8 @@ CGROUP_NAME="oom_experiment"
 CGROUP_PATH="/sys/fs/cgroup/${CGROUP_NAME}"
 MEM_LIMIT="200M"           # Total memory budget for the cgroup
 NUM_TRIALS=10               # How many times to repeat the experiment
-LOG_DIR="./results"
+LOG_DIR="./01_results"
+RUN_DIR="${LOG_DIR}/$(date +%Y%m%d_%H%M%S)"
 WORKER_BINARY="./mem_worker"
 
 # Worker definitions: name and memory allocation in MB
@@ -93,7 +94,7 @@ setup_cgroup() {
 
 run_single_trial() {
     local trial_num=$1
-    local result_file="${LOG_DIR}/trial_${trial_num}.log"
+    local result_file="${RUN_DIR}/trial_${trial_num}.log"
 
     echo ""
     echo "========================================"
@@ -192,7 +193,7 @@ run_single_trial() {
 # --- Main ---
 trap cleanup EXIT
 
-mkdir -p "${LOG_DIR}"
+mkdir -p "${RUN_DIR}"
 
 echo "============================================="
 echo " OOM Killer Determinism Experiment"
@@ -213,7 +214,7 @@ echo "============================================="
 echo " Summary"
 echo "============================================="
 
-summary_file="${LOG_DIR}/summary.txt"
+summary_file="${RUN_DIR}/summary.txt"
 {
     echo "OOM Killer Determinism Experiment - Summary"
     echo "Date: $(date)"
@@ -222,14 +223,14 @@ summary_file="${LOG_DIR}/summary.txt"
     echo ""
     echo "Per-trial results:"
     for i in $(seq 1 ${NUM_TRIALS}); do
-        killed=$(grep "^Killed:" "${LOG_DIR}/trial_${i}.log" | sed 's/Killed: //')
+        killed=$(grep "^Killed:" "${RUN_DIR}/trial_${i}.log" | sed 's/Killed: //')
         echo "  Trial ${i}: Killed -> ${killed}"
     done
     echo ""
 
     # Check determinism
     unique_results=$(for i in $(seq 1 ${NUM_TRIALS}); do
-        grep "^Killed:" "${LOG_DIR}/trial_${i}.log"
+        grep "^Killed:" "${RUN_DIR}/trial_${i}.log"
     done | sort -u | wc -l)
 
     if [[ "$unique_results" -eq 1 ]]; then
@@ -238,10 +239,10 @@ summary_file="${LOG_DIR}/summary.txt"
         echo "RESULT: NON-DETERMINISTIC - Different processes killed across trials."
         echo "Unique outcomes:"
         for i in $(seq 1 ${NUM_TRIALS}); do
-            grep "^Killed:" "${LOG_DIR}/trial_${i}.log"
+            grep "^Killed:" "${RUN_DIR}/trial_${i}.log"
         done | sort | uniq -c | sort -rn
     fi
 } | tee "${summary_file}"
 
 echo ""
-echo "Full results saved in ${LOG_DIR}/"
+echo "Full results saved in ${RUN_DIR}/"

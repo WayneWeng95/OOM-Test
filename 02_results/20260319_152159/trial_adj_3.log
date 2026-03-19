@@ -1,0 +1,13 @@
+=== Trial 3 ===
+Timestamp: 2026-03-19T15:22:27-06:00
+Workers:
+  small:  20MB (PID 93917,  oom_score_adj=+1000 TARGETED)
+  medium: 50MB (PID 93918, oom_score_adj=0     default)
+  large:  80MB (PID 93919,  oom_score_adj=-1000 PROTECTED)
+Trigger: 100MB (PID 93933)
+Killed: none
+Expected: small (because oom_score_adj=+1000)
+
+Kernel OOM log:
+
+
